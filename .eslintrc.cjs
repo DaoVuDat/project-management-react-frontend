@@ -1,11 +1,14 @@
 module.exports = {
 	root: true,
-	env: {browser: true, es2020: true},
+	env: { browser: true, es2020: true },
 	extends: [
 		'eslint:recommended',
 		'plugin:react/recommended',
+		'airbnb',
+		'airbnb-typescript',
+		'airbnb/hooks',
 		'plugin:@typescript-eslint/recommended-type-checked',
-		'plugin:react-hooks/recommended',
+		'plugin:@typescript-eslint/stylistic-type-checked',
 		'plugin:jsx-a11y/recommended',
 		'plugin:react/jsx-runtime',
 		'prettier',
@@ -22,7 +25,7 @@ module.exports = {
 	rules: {
 		'react-refresh/only-export-components': [
 			'warn',
-			{allowConstantExport: true},
+			{ allowConstantExport: true },
 		],
 	},
-}
+};
