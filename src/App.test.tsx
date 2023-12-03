@@ -7,10 +7,10 @@ import App from './App';
 
 // Tests
 describe('Renders main page correctly', () => {
-  it('Should render the page correctly', async () => {
+  it('Should render the page correctly', () => {
     // Setup
     render(<App />);
-    const h1 = await screen.queryByText('Hello, React!');
+    const h1 = screen.queryByText('Hello, React!');
 
     // Expectations
     expect(h1).not.toBeNull();
