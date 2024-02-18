@@ -2,18 +2,13 @@ module.exports = {
 	root: true,
 	env: { browser: true, es2020: true },
 	extends: [
-		'eslint:recommended',
 		'plugin:react/recommended',
-		'airbnb',
-		'airbnb-typescript',
-		'airbnb/hooks',
 		'plugin:@typescript-eslint/recommended-type-checked',
-		'plugin:@typescript-eslint/stylistic-type-checked',
 		'plugin:jsx-a11y/recommended',
 		'plugin:react/jsx-runtime',
 		'prettier',
 	],
-	ignorePatterns: ['dist', '.eslintrc.cjs', 'vite.config.ts'],
+	ignorePatterns: ['dist', '.eslintrc.cjs', 'vite.config.ts', 'tailwind.config.js'],
 	parser: '@typescript-eslint/parser',
 	plugins: ['react-refresh', 'react', 'react-hooks', 'jsx-a11y', 'prettier'],
 	parserOptions: {
@@ -23,9 +18,10 @@ module.exports = {
 		tsconfigRootDir: __dirname,
 	},
 	rules: {
-		'react-refresh/only-export-components': [
-			'warn',
-			{ allowConstantExport: true },
-		],
+		'@typescript-eslint/no-misused-promises': [2, {
+			'checksVoidReturn': {
+				'attributes': false,
+			},
+		}],
 	},
 };
