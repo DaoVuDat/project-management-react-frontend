@@ -4,6 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
+        secondary: '#FD841F',
+        'secondary-light': '#ffece0',
+        'secondary-text': '#fd6c10',
+        primary2: '#001253',
+        secondary2: '#97c680',
+        'background-color': '#EBEBEB',
+
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -20,5 +27,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/forms')],
 };

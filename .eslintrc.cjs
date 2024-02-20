@@ -23,5 +23,10 @@ module.exports = {
 				'attributes': false,
 			},
 		}],
+		'@typescript-eslint/no-unsafe-call': [0],
+		'@typescript-eslint/no-unsafe-assignment': [0],
+		'@typescript-eslint/no-unsafe-argument': [0],
+		'@typescript-eslint/no-unsafe-member-access': [0],
+		'@typescript-eslint/no-unsafe-return': [0],
 	},
 };
