@@ -3,7 +3,7 @@ import {wretchClient} from '@/services/authClient.ts';
 export interface AuthResponse {
   access_token: string;
   user_id: string;
-  role: string;
+  role: 'admin' | 'client' | '';
 }
 
 export interface SignUpUser {

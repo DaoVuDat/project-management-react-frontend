@@ -13,74 +13,72 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as DashboardRouteImport } from './routes/_dashboard/route'
-import { Route as AuthRouteImport } from './routes/_auth/route'
+import { Route as DashboardImport } from './routes/_dashboard'
+import { Route as AuthImport } from './routes/_auth'
+import { Route as DashboardProjectsImport } from './routes/_dashboard/projects'
 import { Route as DashboardProfileImport } from './routes/_dashboard/profile'
-import { Route as DashboardProjectsRouteImport } from './routes/_dashboard/projects/route'
+import { Route as AuthSignupImport } from './routes/_auth/signup'
+import { Route as AuthLoginImport } from './routes/_auth/login'
 import { Route as DashboardProjectsIdImport } from './routes/_dashboard/projects/$id'
 
 // Create Virtual Routes
 
 const DashboardIndexLazyImport = createFileRoute('/_dashboard/')()
 const DashboardSettingsLazyImport = createFileRoute('/_dashboard/settings')()
-const AuthSignupLazyImport = createFileRoute('/_auth/signup')()
-const AuthLoginLazyImport = createFileRoute('/_auth/login')()
 const DashboardProjectsIndexLazyImport = createFileRoute(
   '/_dashboard/projects/',
 )()
 
 // Create/Update Routes
 
-const DashboardRouteRoute = DashboardRouteImport.update({
+const DashboardRoute = DashboardImport.update({
   id: '/_dashboard',
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthRouteRoute = AuthRouteImport.update({
+const AuthRoute = AuthImport.update({
   id: '/_auth',
   getParentRoute: () => rootRoute,
 } as any)
 
 const DashboardIndexLazyRoute = DashboardIndexLazyImport.update({
   path: '/',
-  getParentRoute: () => DashboardRouteRoute,
+  getParentRoute: () => DashboardRoute,
 } as any).lazy(() =>
   import('./routes/_dashboard/index.lazy').then((d) => d.Route),
 )
 
 const DashboardSettingsLazyRoute = DashboardSettingsLazyImport.update({
   path: '/settings',
-  getParentRoute: () => DashboardRouteRoute,
+  getParentRoute: () => DashboardRoute,
 } as any).lazy(() =>
   import('./routes/_dashboard/settings.lazy').then((d) => d.Route),
 )
 
-const AuthSignupLazyRoute = AuthSignupLazyImport.update({
-  path: '/signup',
-  getParentRoute: () => AuthRouteRoute,
-} as any).lazy(() => import('./routes/_auth/signup.lazy').then((d) => d.Route))
-
-const AuthLoginLazyRoute = AuthLoginLazyImport.update({
-  path: '/login',
-  getParentRoute: () => AuthRouteRoute,
-} as any).lazy(() => import('./routes/_auth/login.lazy').then((d) => d.Route))
+const DashboardProjectsRoute = DashboardProjectsImport.update({
+  path: '/projects',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 const DashboardProfileRoute = DashboardProfileImport.update({
   path: '/profile',
-  getParentRoute: () => DashboardRouteRoute,
-} as any).lazy(() =>
-  import('./routes/_dashboard/profile.lazy').then((d) => d.Route),
-)
+  getParentRoute: () => DashboardRoute,
+} as any)
 
-const DashboardProjectsRouteRoute = DashboardProjectsRouteImport.update({
-  path: '/projects',
-  getParentRoute: () => DashboardRouteRoute,
+const AuthSignupRoute = AuthSignupImport.update({
+  path: '/signup',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthLoginRoute = AuthLoginImport.update({
+  path: '/login',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 const DashboardProjectsIndexLazyRoute = DashboardProjectsIndexLazyImport.update(
   {
     path: '/',
-    getParentRoute: () => DashboardProjectsRouteRoute,
+    getParentRoute: () => DashboardProjectsRoute,
   } as any,
 ).lazy(() =>
   import('./routes/_dashboard/projects/index.lazy').then((d) => d.Route),
@@ -88,7 +86,7 @@ const DashboardProjectsIndexLazyRoute = DashboardProjectsIndexLazyImport.update(
 
 const DashboardProjectsIdRoute = DashboardProjectsIdImport.update({
   path: '/$id',
-  getParentRoute: () => DashboardProjectsRouteRoute,
+  getParentRoute: () => DashboardProjectsRoute,
 } as any).lazy(() =>
   import('./routes/_dashboard/projects/$id.lazy').then((d) => d.Route),
 )
@@ -98,44 +96,44 @@ const DashboardProjectsIdRoute = DashboardProjectsIdImport.update({
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/_auth': {
-      preLoaderRoute: typeof AuthRouteImport
+      preLoaderRoute: typeof AuthImport
       parentRoute: typeof rootRoute
     }
     '/_dashboard': {
-      preLoaderRoute: typeof DashboardRouteImport
+      preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
     }
-    '/_dashboard/projects': {
-      preLoaderRoute: typeof DashboardProjectsRouteImport
-      parentRoute: typeof DashboardRouteImport
+    '/_auth/login': {
+      preLoaderRoute: typeof AuthLoginImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/signup': {
+      preLoaderRoute: typeof AuthSignupImport
+      parentRoute: typeof AuthImport
     }
     '/_dashboard/profile': {
       preLoaderRoute: typeof DashboardProfileImport
-      parentRoute: typeof DashboardRouteImport
+      parentRoute: typeof DashboardImport
     }
-    '/_auth/login': {
-      preLoaderRoute: typeof AuthLoginLazyImport
-      parentRoute: typeof AuthRouteImport
-    }
-    '/_auth/signup': {
-      preLoaderRoute: typeof AuthSignupLazyImport
-      parentRoute: typeof AuthRouteImport
+    '/_dashboard/projects': {
+      preLoaderRoute: typeof DashboardProjectsImport
+      parentRoute: typeof DashboardImport
     }
     '/_dashboard/settings': {
       preLoaderRoute: typeof DashboardSettingsLazyImport
-      parentRoute: typeof DashboardRouteImport
+      parentRoute: typeof DashboardImport
     }
     '/_dashboard/': {
       preLoaderRoute: typeof DashboardIndexLazyImport
-      parentRoute: typeof DashboardRouteImport
+      parentRoute: typeof DashboardImport
     }
     '/_dashboard/projects/$id': {
       preLoaderRoute: typeof DashboardProjectsIdImport
-      parentRoute: typeof DashboardProjectsRouteImport
+      parentRoute: typeof DashboardProjectsImport
     }
     '/_dashboard/projects/': {
       preLoaderRoute: typeof DashboardProjectsIndexLazyImport
-      parentRoute: typeof DashboardProjectsRouteImport
+      parentRoute: typeof DashboardProjectsImport
     }
   }
 }
@@ -143,13 +141,13 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren([
-  AuthRouteRoute.addChildren([AuthLoginLazyRoute, AuthSignupLazyRoute]),
-  DashboardRouteRoute.addChildren([
-    DashboardProjectsRouteRoute.addChildren([
+  AuthRoute.addChildren([AuthLoginRoute, AuthSignupRoute]),
+  DashboardRoute.addChildren([
+    DashboardProfileRoute,
+    DashboardProjectsRoute.addChildren([
       DashboardProjectsIdRoute,
       DashboardProjectsIndexLazyRoute,
     ]),
-    DashboardProfileRoute,
     DashboardSettingsLazyRoute,
     DashboardIndexLazyRoute,
   ]),

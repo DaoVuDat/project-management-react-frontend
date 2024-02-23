@@ -1,13 +1,20 @@
 import wretch from 'wretch';
 import {AuthResponse} from '@/services/api/auth.ts';
-import {getAccessToken, storeAccessToken} from '@/services/localStorage.ts';
+import { useAuthStore } from '@/store/authStore.tsx';
 
 const BASE_URL = 'http://localhost:8080/v1';
 
-const token = localStorage.getItem('accessToken');
+
+
+const wretchClient = wretch(BASE_URL)
+  .options({
+    mode: 'cors',
+    credentials: 'include',
+  })
+  .content('application/json');
+
 
 const wretchClientWithRefresh = wretch(BASE_URL)
-  .auth(`Bearer ${token}`)
   .options({
     mode: 'cors',
     credentials: 'include',
@@ -16,12 +23,12 @@ const wretchClientWithRefresh = wretch(BASE_URL)
   .content('application/json')
   .catcher(401, async (err, originalRequest) => {
     // get old access token from localStorage
-    const oldAccessToken = getAccessToken();
+    const oldAccessToken = useAuthStore.getState().accessToken
     if (oldAccessToken.length < 1) {
       throw err;
     }
 
-    const {access_token: newAccessToken} = await wretch('/token/refresh')
+    const {access_token: newAccessToken,user_id,role} = await wretchClient.url('/token/refresh')
       .auth(`Bearer ${oldAccessToken}`)
       .post()
       .unauthorized((err) => {
@@ -29,7 +36,7 @@ const wretchClientWithRefresh = wretch(BASE_URL)
       })
       .json<AuthResponse>();
 
-    storeAccessToken(newAccessToken);
+    useAuthStore.getState().setUser(user_id, role, newAccessToken)
     return originalRequest
       .auth(`Bearer ${newAccessToken}`)
       .fetch()
@@ -38,12 +45,5 @@ const wretchClientWithRefresh = wretch(BASE_URL)
       })
       .json();
   });
-
-const wretchClient = wretch(BASE_URL)
-  .options({
-    mode: 'cors',
-    credentials: 'include',
-  })
-  .content('application/json');
 
 export {wretchClient, wretchClientWithRefresh};

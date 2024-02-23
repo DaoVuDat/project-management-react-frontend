@@ -1,13 +1,43 @@
-import {createFileRoute, Outlet, Link, redirect} from '@tanstack/react-router';
+import {
+  createFileRoute,
+  Outlet,
+  Link,
+  redirect,
+  useNavigate,
+} from '@tanstack/react-router';
 import {HiBars3, HiXMark} from 'react-icons/hi2';
 import {Disclosure, Menu, Transition} from '@headlessui/react';
 import Logo from '@/assets/images/logo-trackpro4-orange.svg';
 import {clsx} from 'clsx';
 import {Fragment} from 'react';
+import {useAuthStore} from '@/store/authStore.tsx';
 
-const DashboardLayout = () => {
-  const logout = () => {
-    console.log('logout');
+export const Route = createFileRoute('/_dashboard')({
+  component: DashboardLayout,
+  beforeLoad: ({location}) => {
+    const authStore = useAuthStore.getState();
+
+    if (authStore.accessToken.length < 1) {
+      throw redirect({
+        to: '/login',
+        search: {
+          // Use the current location to power a redirect after login
+          // (Do not use `router.state.resolvedLocation` as it can
+          // potentially lag behind the actual current location)
+          redirect: location.href,
+        },
+      });
+    }
+  },
+});
+
+function DashboardLayout () {
+  const removeUser = useAuthStore((store) => store.removeUser);
+  const navigate = useNavigate({from: Route.fullPath});
+
+  const logout = async () => {
+    removeUser();
+    await navigate({to: '/login'});
   };
 
   return (
@@ -82,16 +112,11 @@ const DashboardLayout = () => {
                       className="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium text-gray-500 ">
                       Profile
                     </Link>
-                    <Link
-                      to="/login"
-                      className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                      Login
-                    </Link>
                   </div>
                 </div>
                 <div className="flex items-center lg:hidden">
                   {/* Mobile menu button */}
-                  <Disclosure.Button className="focus:ring-secondary inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset">
+                  <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-secondary">
                     <span className="sr-only">Open main menu</span>
                     {open ? (
                       <HiXMark
@@ -122,7 +147,7 @@ const DashboardLayout = () => {
                     as="div"
                     className="relative ml-4 flex-shrink-0">
                     <div>
-                      <Menu.Button className="focus:ring-secondary flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-offset-2">
+                      <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2">
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 rounded-full"
@@ -271,21 +296,4 @@ const DashboardLayout = () => {
   );
 };
 
-export const Route = createFileRoute('/_dashboard')({
-  component: DashboardLayout,
-  beforeLoad: ({location, context}) => {
-    console.log(context.authContext.isAuthenticated);
 
-    if (!context.authContext.isAuthenticated) {
-      throw redirect({
-        to: '/login',
-        search: {
-          // Use the current location to power a redirect after login
-          // (Do not use `router.state.resolvedLocation` as it can
-          // potentially lag behind the actual current location)
-          redirect: location.href,
-        },
-      });
-    }
-  },
-});

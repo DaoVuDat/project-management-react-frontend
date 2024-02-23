@@ -1,24 +1,28 @@
-import {createLazyFileRoute, Link} from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import {z} from 'zod';
 import {Controller, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import * as Form from '@radix-ui/react-form';
 import {loginUser} from '@/services/api/auth.ts';
-import {storeAccessToken} from '@/services/localStorage.ts';
+import { useAuthStore } from '@/store/authStore.tsx';
+
+export const Route = createFileRoute('/_auth/login')({
+  component: LoginRoute,
+  validateSearch: (search: Record<string, unknown>): {redirect: string | undefined} => {
+    return {
+      redirect: (search.redirect as string) || undefined,
+    }
+  },
+});
 
 const schema = z.object({
   username: z.string().min(8).max(20),
   password: z.string(),
-  // .regex(
-  //   new RegExp(
-  //     '^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,}$',
-  //   ),
-  // ),
 });
 
 type SchemeType = z.infer<typeof schema>;
 
-const LoginRoute = () => {
+function LoginRoute () {
   const {
     control,
     handleSubmit,
@@ -26,14 +30,22 @@ const LoginRoute = () => {
   } = useForm<SchemeType>({
     resolver: zodResolver(schema),
   });
-  const onSubmit = handleSubmit((data: SchemeType) => {
-    loginUser(data)
-      .then((r) => {
-        console.log(r);
-        // setup context
-        storeAccessToken(r.access_token);
-      })
-      .catch((err) => console.log('err', err));
+
+  const setUser = useAuthStore(s => s.setUser);
+
+  const {redirect} = Route.useSearch()
+
+  const navigate = useNavigate({from: Route.fullPath});
+
+
+  const onSubmit = handleSubmit(async (inputData: SchemeType) => {
+    try {
+      const data = await loginUser(inputData);
+      setUser(data.user_id, data.role, data.access_token);
+      await navigate({to: redirect || "/"});
+    } catch (err) {
+      console.log('err', err);
+    }
   });
 
   return (
@@ -105,6 +117,9 @@ const LoginRoute = () => {
             Don’t have an account yet?{' '}
             <Link
               to="/signup"
+              search={{
+                redirect: redirect || undefined
+              }}
               className="font-medium text-primary-600 hover:underline dark:text-primary-500">
               Sign up
             </Link>
@@ -115,6 +130,6 @@ const LoginRoute = () => {
   );
 };
 
-export const Route = createLazyFileRoute('/_auth/login')({
-  component: LoginRoute,
-});
+
+
+

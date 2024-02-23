@@ -1,9 +1,24 @@
-import {createFileRoute, Outlet} from '@tanstack/react-router';
+import {createFileRoute, Outlet, redirect} from '@tanstack/react-router';
 import LogoForLight from '@/assets/images/logo-trackpro4-orange.svg';
 import LogoForDark from '@/assets/images/logo-trackpro4-orange-dark.svg';
 import {usePrefersColorScheme} from '@/hooks/usePrefersColorScheme.ts';
+import {useAuthStore} from '@/store/authStore.tsx';
 
-const AuthLayout = () => {
+export const Route = createFileRoute('/_auth')({
+  component: AuthLayout,
+  beforeLoad: ({location}) => {
+    const authStore = useAuthStore.getState();
+    // console.log('userId', authStore);
+    console.log(location.href);
+    if (authStore.accessToken.length > 1) {
+      throw redirect({
+        to: '/',
+      });
+    }
+  },
+});
+
+function AuthLayout() {
   const mode = usePrefersColorScheme();
 
   return (
@@ -30,8 +45,4 @@ const AuthLayout = () => {
       </div>
     </section>
   );
-};
-
-export const Route = createFileRoute('/_auth')({
-  component: AuthLayout,
-});
+}
