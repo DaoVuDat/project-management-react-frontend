@@ -1,7 +1,7 @@
 import {
   createFileRoute,
-  Outlet,
   Link,
+  Outlet,
   redirect,
   useNavigate,
 } from '@tanstack/react-router';
@@ -11,6 +11,11 @@ import Logo from '@/assets/images/logo-trackpro4-orange.svg';
 import {clsx} from 'clsx';
 import {Fragment} from 'react';
 import {useAuthStore} from '@/store/authStore.tsx';
+import {getProfileUser} from '@/services/api/profile.ts';
+import {useSuspenseQuery} from '@tanstack/react-query';
+import {WretchError} from 'wretch/resolver';
+import {GlobalLoading} from '@/components/loading/globalLoading.tsx';
+import _ from 'lodash';
 
 export const Route = createFileRoute('/_dashboard')({
   component: DashboardLayout,
@@ -29,11 +34,61 @@ export const Route = createFileRoute('/_dashboard')({
       });
     }
   },
+  loader: async ({context, location}) => {
+    // load data user
+    const userId = useAuthStore.getState().userId;
+    const accessToken = useAuthStore.getState().accessToken;
+
+    // use react query to fetch data
+    const queryClient = context.queryClient;
+    try {
+      await queryClient.ensureQueryData({
+        queryKey: ['profile', userId],
+        queryFn: () => {
+          return getProfileUser(accessToken, userId);
+        },
+      });
+    } catch (err) {
+      if (err instanceof WretchError && err.status === 401) {
+        // remove authState
+        useAuthStore.getState().removeUser();
+
+        throw redirect({
+          to: '/login',
+          search: {
+            redirect: location.href,
+          },
+        });
+      }
+    }
+  },
+  pendingComponent: () => {
+    return (
+      <div className="absolute left-1/2 top-1/2 z-50 w-64 -translate-x-1/2 -translate-y-1/2">
+        <GlobalLoading />
+      </div>
+    );
+  },
 });
 
-function DashboardLayout () {
+function DashboardLayout() {
   const removeUser = useAuthStore((store) => store.removeUser);
   const navigate = useNavigate({from: Route.fullPath});
+
+  const {userId, accessToken} = useAuthStore((s) => ({
+    accessToken: s.accessToken,
+    userId: s.userId,
+  }));
+
+  const {data} = useSuspenseQuery({
+    queryKey: ['profile', userId],
+    queryFn: () => {
+      return getProfileUser(accessToken, userId);
+    },
+    staleTime: 1000*60*60,
+  });
+
+  const profile = data.profile
 
   const logout = async () => {
     removeUser();
@@ -86,20 +141,6 @@ function DashboardLayout () {
                       Projects
                     </Link>
                     <Link
-                      to="/projects/$id"
-                      params={{id: '123'}}
-                      activeProps={{
-                        className: clsx('border-secondary text-gray-900'),
-                      }}
-                      inactiveProps={{
-                        className: clsx(
-                          'border-transparent hover:border-gray-300 hover:text-gray-700',
-                        ),
-                      }}
-                      className="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium text-gray-500 ">
-                      Project 123
-                    </Link>
-                    <Link
                       to="/profile"
                       activeProps={{
                         className: clsx('border-secondary text-gray-900'),
@@ -132,15 +173,6 @@ function DashboardLayout () {
                   </Disclosure.Button>
                 </div>
                 <div className="hidden lg:ml-4 lg:flex lg:items-center">
-                  {/*<button*/}
-                  {/*  type="button"*/}
-                  {/*  className="focus:ring-secondary flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2">*/}
-                  {/*  <span className="sr-only">View notifications</span>*/}
-                  {/*  <HiOutlineBell*/}
-                  {/*    className="h-6 w-6"*/}
-                  {/*    aria-hidden="true"*/}
-                  {/*  />*/}
-                  {/*</button>*/}
 
                   {/* Profile dropdown */}
                   <Menu
@@ -151,7 +183,7 @@ function DashboardLayout () {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 rounded-full"
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                          src={profile.image_url}
                           alt=""
                         />
                       </Menu.Button>
@@ -166,9 +198,9 @@ function DashboardLayout () {
                       leaveTo="transform opacity-0 scale-95">
                       <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <div className="px-4 py-2 text-base font-medium text-gray-800">
-                          Tim Cook
+                          {`${_.capitalize(profile.first_name)} ${_.capitalize(profile.last_name)}`}
                           <p className="text-sm font-medium text-gray-500">
-                            tom@example.com
+                            {profile.phone_number}
                           </p>
                         </div>
 
@@ -243,27 +275,18 @@ function DashboardLayout () {
                   <div className="flex-shrink-0">
                     <img
                       className="h-10 w-10 rounded-full"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                      src={profile.image_url}
                       alt=""
                     />
                   </div>
                   <div className="ml-3">
                     <div className="text-base font-medium text-gray-800">
-                      Tom Cook
+                      {`${_.capitalize(profile.first_name)} ${_.capitalize(profile.last_name)}`}
                     </div>
                     <div className="text-sm font-medium text-gray-500">
-                      tom@example.com
+                      {profile.phone_number}
                     </div>
                   </div>
-                  {/*<button*/}
-                  {/*  type="button"*/}
-                  {/*  className="focus:ring-secondary ml-auto flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2">*/}
-                  {/*  <span className="sr-only">View notifications</span>*/}
-                  {/*  <HiOutlineBell*/}
-                  {/*    className="h-6 w-6"*/}
-                  {/*    aria-hidden="true"*/}
-                  {/*  />*/}
-                  {/*</button>*/}
                 </div>
                 <div className="mt-3 space-y-1">
                   <Disclosure.Button
@@ -294,6 +317,4 @@ function DashboardLayout () {
       </div>
     </>
   );
-};
-
-
+}

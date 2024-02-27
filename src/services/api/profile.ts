@@ -1,4 +1,4 @@
-import { wretchClientWithRefresh } from '@/services/authClient.ts';
+import { wretchClientWithRefresh } from '@/services/wretchClient.ts';
 
 export interface ProfileResponse {
 	profile: {

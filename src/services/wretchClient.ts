@@ -1,4 +1,5 @@
 import wretch from 'wretch';
+import QueryStringAddon from "wretch/addons/queryString"
 import {AuthResponse} from '@/services/api/auth.ts';
 import { useAuthStore } from '@/store/authStore.tsx';
 
@@ -15,6 +16,7 @@ const wretchClient = wretch(BASE_URL)
 
 
 const wretchClientWithRefresh = wretch(BASE_URL)
+  .addon(QueryStringAddon)
   .options({
     mode: 'cors',
     credentials: 'include',

@@ -1,4 +1,4 @@
-import {wretchClient} from '@/services/authClient.ts';
+import {wretchClient} from '@/services/wretchClient.ts';
 
 export interface AuthResponse {
   access_token: string;
