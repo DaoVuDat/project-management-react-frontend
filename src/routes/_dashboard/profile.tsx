@@ -17,7 +17,7 @@ import {
 } from '@tanstack/react-query';
 import {GlobalLoading} from '@/components/loading/globalLoading.tsx';
 import { toast } from 'react-hot-toast';
-import { Toast, ToastLoadingId } from '@/components/toast/toast.tsx';
+import { Toast, ToastLoadingId } from '@/components/toast/Toast.tsx';
 import { clsx } from 'clsx';
 
 export const Route = createFileRoute('/_dashboard/profile')({
