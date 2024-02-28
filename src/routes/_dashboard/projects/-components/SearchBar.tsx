@@ -27,7 +27,7 @@ export function SearchBar() {
           <Popover.Group className="-mx-4 flex items-center divide-x divide-gray-200">
 
               <Popover className="relative inline-block px-4 text-left">
-                <Popover.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                <Popover.Button className="group inline-flex focus:outline-none justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
                   <span>Filters</span>
                   {/*{sectionIdx === 0 ? (*/}
                   {/*  <span className="ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-700">*/}
@@ -70,7 +70,7 @@ export function SearchBar() {
                           />
                           <label
                             htmlFor={`filter-${filterData.mode}`}
-                            className="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900"
+                            className="ml-3 whitespace-nowrap pr-6 text-sm font-medium text-gray-900 cursor-pointer"
                           >
                             {filterData.label}
                           </label>

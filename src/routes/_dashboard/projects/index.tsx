@@ -5,8 +5,8 @@ import {getProjects} from '@/services/api/projects.tsx';
 import {GlobalLoading} from '@/components/loading/globalLoading.tsx';
 
 const projectsSearchSchema = z.object({
-  byUid: z.string().optional().catch(undefined),
-  returnPayment: z.boolean().optional().catch(undefined),
+  byUid: z.string().optional(),
+  returnPayment: z.boolean().optional(),
 });
 
 type ProjectsSearch = {
