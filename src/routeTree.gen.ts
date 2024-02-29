@@ -21,6 +21,7 @@ import { Route as AuthSignupImport } from './routes/_auth/signup'
 import { Route as AuthLoginImport } from './routes/_auth/login'
 import { Route as DashboardProjectsIndexImport } from './routes/_dashboard/projects/index'
 import { Route as DashboardProjectsIdImport } from './routes/_dashboard/projects/$id'
+import { Route as DashboardProjectsIdEditImport } from './routes/_dashboard/projects_/$id.edit'
 
 // Create Virtual Routes
 
@@ -87,6 +88,11 @@ const DashboardProjectsIdRoute = DashboardProjectsIdImport.update({
   import('./routes/_dashboard/projects/$id.lazy').then((d) => d.Route),
 )
 
+const DashboardProjectsIdEditRoute = DashboardProjectsIdEditImport.update({
+  path: '/projects/$id/edit',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -131,6 +137,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardProjectsIndexImport
       parentRoute: typeof DashboardProjectsImport
     }
+    '/_dashboard/projects/$id/edit': {
+      preLoaderRoute: typeof DashboardProjectsIdEditImport
+      parentRoute: typeof DashboardImport
+    }
   }
 }
 
@@ -146,6 +156,7 @@ export const routeTree = rootRoute.addChildren([
     ]),
     DashboardSettingsLazyRoute,
     DashboardIndexLazyRoute,
+    DashboardProjectsIdEditRoute,
   ]),
 ])
 

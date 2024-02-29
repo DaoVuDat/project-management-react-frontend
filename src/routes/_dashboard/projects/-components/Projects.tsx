@@ -2,7 +2,7 @@ import {parseISO} from 'date-fns';
 import {clsx} from 'clsx';
 import _ from 'lodash';
 import {formatMoney} from '@/utils/money.ts';
-import {getRouteApi, Link} from '@tanstack/react-router';
+import {getRouteApi, useNavigate} from '@tanstack/react-router';
 import {useAuthStore} from '@/store/authStore.tsx';
 import {useSuspenseQuery} from '@tanstack/react-query';
 import {getProjects, Project} from '@/services/api/projects.tsx';
@@ -10,9 +10,13 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
+import {Pagination} from './Pagination';
+
+// PPOJECTS COLUMNS
 const columnHelper = createColumnHelper<Project>();
 
 const projectColumns = [
@@ -89,32 +93,19 @@ const projectColumns = [
     header: () => 'Price',
     cell: (info) => formatMoney(info.getValue()),
   }),
-  columnHelper.accessor(
-    (row) => ({
-      id: row.id,
-      projectName: row.project_name,
-    }),
-    {
-      header: () => '',
-      id: 'actions',
-      cell: (info) => (
-        <Link
-          to="/projects/$id"
-          params={{
-            id: info.getValue().id,
-          }}
-          className="text-secondary hover:text-secondary-text">
-          Edit
-          <span className="sr-only">, {info.getValue().projectName}</span>
-        </Link>
-      ),
-    },
-  ),
 ];
 
+// UTILS
 const routeApi = getRouteApi('/_dashboard/projects/');
 
-export function Projects() {
+
+// COMPONENT
+interface ProjectsProps {
+  currentPath: string
+}
+
+export function Projects({currentPath}: ProjectsProps) {
+  // Tanstack Query
   const searchParams = routeApi.useSearch();
   const accessToken = useAuthStore((s) => s.accessToken);
   const {data} = useSuspenseQuery({
@@ -136,11 +127,21 @@ export function Projects() {
 
   const projects = data.projects;
 
+  // Tanstack Table
   const table = useReactTable({
     data: projects,
     columns: projectColumns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: searchParams.pageSize,
+        pageIndex: searchParams.pageIndex! - 1,
+      },
+    },
   });
+
+  const navigate = useNavigate({from: currentPath});
 
   return (
     <div className="mt-8 flow-root">
@@ -175,7 +176,17 @@ export function Projects() {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {table.getRowModel().rows.map((row) => (
-                  <tr key={row.id}>
+                  <tr
+                    key={row.id}
+                    className="cursor-pointer hover:bg-slate-200"
+                    onClick={async () =>
+                      await navigate({
+                        to: '/projects/$id',
+                        params: {
+                          id: row.original.id,
+                        },
+                      })
+                    }>
                     {row.getVisibleCells().map((cell, idx) => (
                       <td
                         key={cell.id}
@@ -194,6 +205,11 @@ export function Projects() {
               </tbody>
             </table>
           </div>
+          {/*Pagination Component*/}
+          <Pagination
+            currentPath={currentPath}
+            table={table}
+          />
         </div>
       </div>
     </div>

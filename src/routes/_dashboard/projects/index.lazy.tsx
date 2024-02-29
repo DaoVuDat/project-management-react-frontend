@@ -2,16 +2,21 @@ import {createLazyFileRoute} from '@tanstack/react-router';
 import {SearchBar} from '@/routes/_dashboard/projects/-components/SearchBar.tsx';
 import {Projects} from '@/routes/_dashboard/projects/-components/Projects.tsx';
 import { useProjectFilterStore } from '@/store/projectsFilterStore.tsx';
+import { useRouterState } from '@tanstack/react-router';
 
 export const Route = createLazyFileRoute('/_dashboard/projects/')({
   component: ProjectsRoute,
 });
+
 
 function ProjectsRoute() {
   const {projectFilters, removeProjectFilter} = useProjectFilterStore(s => ({
     projectFilters: s.projectFilters,
     removeProjectFilter: s.removeProjectFilter
   }));
+
+  const routerState = useRouterState();
+  const currentPath = routerState.location.pathname;
 
   return (
     <div>
@@ -74,7 +79,7 @@ function ProjectsRoute() {
         </div>
       </div>
 
-      <Projects />
+      <Projects currentPath={currentPath}/>
     </div>
   );
 }

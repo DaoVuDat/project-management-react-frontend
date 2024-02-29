@@ -1,4 +1,8 @@
-import {createFileRoute, useNavigate, useRouter} from '@tanstack/react-router';
+import {
+  createFileRoute,
+  useNavigate,
+  useRouter,
+} from '@tanstack/react-router';
 import {HiUserCircle} from 'react-icons/hi2';
 import {z} from 'zod';
 import {useForm} from 'react-hook-form';
@@ -16,9 +20,9 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query';
 import {GlobalLoading} from '@/components/loading/globalLoading.tsx';
-import { toast } from 'react-hot-toast';
-import { Toast, ToastLoadingId } from '@/components/toast/Toast.tsx';
-import { clsx } from 'clsx';
+import {toast} from 'react-hot-toast';
+import {Toast, ToastLoadingId} from '@/components/toast/Toast.tsx';
+import {clsx} from 'clsx';
 
 export const Route = createFileRoute('/_dashboard/profile')({
   component: ProfileRoute,
@@ -64,26 +68,24 @@ const schema = z.object({
   lastName: z.string().min(1),
   phoneNumber: z.string(),
   about: z.string(),
-  profileImage:
-    z
-      .instanceof(FileList)
-      // .refine((files) => {
-      //   console.log('length', files);
-      //   return files.length > 0;
-      // }, 'Image is required.')
-      .refine((files) => {
-        if (files.length < 1) {
-          return true;
-        }
-        return files[0].size <= MAX_FILE_SIZE;
-      }, `Max file size is 5MB.`)
-      .refine((files) => {
-        if (files.length < 1) {
-          return true;
-        }
-        return ACCEPTED_IMAGE_TYPES.includes(files[0].type);
-      }, '.jpg, .jpeg, .png and .webp files are accepted.'),
-
+  profileImage: z
+    .instanceof(FileList)
+    // .refine((files) => {
+    //   console.log('length', files);
+    //   return files.length > 0;
+    // }, 'Image is required.')
+    .refine((files) => {
+      if (files.length < 1) {
+        return true;
+      }
+      return files[0].size <= MAX_FILE_SIZE;
+    }, `Max file size is 5MB.`)
+    .refine((files) => {
+      if (files.length < 1) {
+        return true;
+      }
+      return ACCEPTED_IMAGE_TYPES.includes(files[0].type);
+    }, '.jpg, .jpeg, .png and .webp files are accepted.'),
 });
 
 type SchemaType = z.infer<typeof schema>;
@@ -108,26 +110,28 @@ function ProfileRoute() {
 
   const mutation = useMutation<ProfileResponse, Error, ProfileUpdate>({
     mutationFn: async (data) => {
-      await new Promise(resolve => setTimeout(resolve, 5000))
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       return updateProfileUser(userId, accessToken, data);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['profile', userId],
       });
-      toast.dismiss(ToastLoadingId)
-      toast.success("Your profile has been successfully updated.")
+      toast.dismiss(ToastLoadingId);
+      toast.success('Your profile has been successfully updated.');
       router.invalidate();
     },
     onMutate: () => {
-      toast.loading("Updating your profile...", {
-        id: ToastLoadingId
-      })
+      toast.loading('Updating your profile...', {
+        id: ToastLoadingId,
+      });
     },
     onError: () => {
-      toast.dismiss(ToastLoadingId)
-      toast.error("Sorry, there was an error updating your profile. Please try again.")
-    }
+      toast.dismiss(ToastLoadingId);
+      toast.error(
+        'Sorry, there was an error updating your profile. Please try again.',
+      );
+    },
   });
 
   const {
@@ -145,7 +149,6 @@ function ProfileRoute() {
   });
 
   const onSubmit = handleSubmit((formData: SchemaType) => {
-
     console.log(formData);
     if (!isDirty) {
       return;
@@ -153,7 +156,8 @@ function ProfileRoute() {
     let imageUrl = data.profile.image_url;
     if (formData.profileImage?.length > 0) {
       // process pre-sign url for image to get image url
-      imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCuxRmYcg6LuxdhIu2d7VayRdRMxO4HJWnow&usqp=CAU"
+      imageUrl =
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCuxRmYcg6LuxdhIu2d7VayRdRMxO4HJWnow&usqp=CAU';
     }
 
     const dataUpdate: ProfileUpdate = {
@@ -170,13 +174,16 @@ function ProfileRoute() {
     await navigate({to: '/'});
   };
 
+
   return (
     <>
-      <Toast headerMessage={{
-        error:"Failure",
-        success: "Success",
-        loading: "In Progress",
-      }}/>
+      <Toast
+        headerMessage={{
+          error: 'Failure',
+          success: 'Success',
+          loading: 'In Progress',
+        }}
+      />
       <main>
         {mutation.isError && <p>{mutation.error.message}</p>}
         {errors.profileImage && errors.profileImage.message}
@@ -249,13 +256,13 @@ function ProfileRoute() {
                     About
                   </label>
                   <div className="mt-2">
-                  <textarea
-                    id="about"
-                    {...register('about')}
-                    rows={3}
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-secondary sm:text-sm sm:leading-6"
-                    defaultValue={''}
-                  />
+                    <textarea
+                      id="about"
+                      {...register('about')}
+                      rows={3}
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-secondary sm:text-sm sm:leading-6"
+                      defaultValue={''}
+                    />
                   </div>
                   <p className="mt-3 text-sm leading-6 text-gray-600">
                     Write a few sentences about yourself.
@@ -298,10 +305,13 @@ function ProfileRoute() {
             <button
               type="submit"
               disabled={mutation.isPending}
-              className={clsx({
-                "rounded-md bg-secondary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-secondary-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary": !mutation.isPending,
-                "rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary": mutation.isPending
-              })}>
+              className={clsx(
+                'rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2  focus-visible:outline-secondary ',
+                {
+                  'bg-secondary hover:bg-secondary-text ': !mutation.isPending,
+                  'cursor-not-allowed bg-slate-400': mutation.isPending,
+                },
+              )}>
               Save
             </button>
           </div>
