@@ -36,11 +36,13 @@ export const getProjects = async (accessToken: string, uid: string | undefined, 
 		.json<ProjectsResponse>()
 }
 
-export const getProjectById = async (accessToken: string, id: string, returnPayment: boolean = false) => {
+export const getProjectById = async (accessToken: string, id: string) => {
+	console.log("getProjectById",id)
+
 	return await wretchClientWithRefresh
 		.auth(`Bearer ${accessToken}`)
 		.query({
-			returnPayment,
+			returnPayment: true,
 		})
 		.get(`/project/${id}`)
 		.json<Project>()
