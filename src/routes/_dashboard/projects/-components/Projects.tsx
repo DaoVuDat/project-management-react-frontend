@@ -1,6 +1,4 @@
-import {parseISO} from 'date-fns';
 import {clsx} from 'clsx';
-import _ from 'lodash';
 import {formatMoney} from '@/utils/money.ts';
 import {getRouteApi, useNavigate} from '@tanstack/react-router';
 import {useAuthStore} from '@/store/authStore.tsx';
@@ -15,6 +13,8 @@ import {
 } from '@tanstack/react-table';
 
 import {Pagination} from './Pagination';
+import { formatDate } from '@/utils/date.ts';
+import { StatusProject } from '@/components/status/StatusProject.tsx';
 
 // PPOJECTS COLUMNS
 const columnHelper = createColumnHelper<Project>();
@@ -47,46 +47,21 @@ const projectColumns = [
   columnHelper.accessor('start_time', {
     header: () => 'Start Time',
     cell: (info) => {
-      const time = info.getValue()
-        ? parseISO(info.getValue()).toLocaleDateString('vi', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-          })
-        : 'Undefined';
-
+      const time = formatDate(info.getValue())
       return <div className="text-gray-900">{time}</div>;
     },
   }),
   columnHelper.accessor('end_time', {
     header: () => 'End Time',
     cell: (info) => {
-      const time = info.getValue()
-        ? parseISO(info.getValue()).toLocaleDateString('vi', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-          })
-        : 'Undefined';
-
+      const time = formatDate(info.getValue())
       return <div className="text-gray-900">{time}</div>;
     },
   }),
   columnHelper.accessor('status', {
     header: () => 'Status',
     cell: (info) => (
-      <span
-        className={clsx(
-          'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium  ring-1 ring-inset',
-          info.getValue() === 'finished' &&
-            ' bg-green-50 text-green-700 ring-green-600/20',
-          info.getValue() === 'progressing' &&
-            ' bg-yellow-50 text-yellow-700 ring-yellow-600/20',
-          info.getValue() === 'registering' &&
-            ' bg-red-50 text-red-700 ring-red-600/20',
-        )}>
-        {_.capitalize(info.getValue())}
-      </span>
+      <StatusProject status={info.getValue()}/>
     ),
   }),
   columnHelper.accessor('price', {

@@ -40,10 +40,10 @@ export const getProjectById = async (accessToken: string, id: string) => {
 	console.log("getProjectById",id)
 
 	return await wretchClientWithRefresh
-		.auth(`Bearer ${accessToken}`)
-		.query({
-			returnPayment: true,
-		})
-		.get(`/project/${id}`)
-		.json<Project>()
+    .auth(`Bearer ${accessToken}`)
+    .query({
+      returnPayment: true,
+    })
+    .get(`/project/${id}`)
+    .json<{project: Project}>();
 }

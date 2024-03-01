@@ -14,11 +14,7 @@ function ProjectRoute() {
   return (
     <div>
       <Project mode='view' id={id}/>
-      <Link
-        to={'/projects/$id/edit'}
-        params={{id: Route.useParams().id}}>
-        Edit
-      </Link>
+
     </div>
   );
 }

@@ -2,7 +2,6 @@ import {createFileRoute} from '@tanstack/react-router';
 import {useAuthStore} from '@/store/authStore.tsx';
 import {getProjectById} from '@/services/api/projects.tsx';
 import {GlobalLoading} from '@/components/loading/globalLoading.tsx';
-import { Project } from '@/routes/_dashboard/-components/Project.tsx';
 
 export const Route = createFileRoute('/_dashboard/projects/$id')({
   loader: async ({params, context}) => {
