@@ -29,14 +29,14 @@ const projectColumns = [
       id: 'project_name',
       header: () => 'Project Name',
       cell: (info) => (
-        <>
-          <div className="font-medium text-gray-900">
+        <div className="max-w-60">
+          <p className="font-medium text-gray-900 truncate text-wrap">
             {info.getValue().projectName}
-          </div>
-          <div className="mt-1 text-gray-500">
+          </p>
+          <p className="mt-1 text-gray-500 truncate ">
             {info.getValue().description}
-          </div>
-        </>
+          </p>
+        </div>
       ),
     },
   ),

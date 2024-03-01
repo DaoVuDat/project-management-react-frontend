@@ -1,4 +1,4 @@
-import { createLazyFileRoute, getRouteApi, Link } from '@tanstack/react-router';
+import { createLazyFileRoute, getRouteApi } from '@tanstack/react-router';
 import { Project } from '@/routes/_dashboard/-components/Project.tsx';
 
 const routeApi = getRouteApi("/_dashboard/projects/$id")

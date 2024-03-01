@@ -7,7 +7,7 @@ import {GlobalLoading} from '@/components/loading/globalLoading.tsx';
 const projectsSearchSchema = z.object({
   byUid: z.string().optional(),
   returnPayment: z.boolean().optional(),
-  pageSize: z.number().min(1).catch(2),
+  pageSize: z.number().min(1).catch(5),
   pageIndex: z.number().min(1).catch(1)
 });
 
