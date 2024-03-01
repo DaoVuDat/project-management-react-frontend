@@ -41,8 +41,8 @@ export function Project({mode, id}: ProjectProps) {
               <StatusProject status={project.status} />
             </div>
 
-            <h2 className="mt-6 text-md leading-6 text-gray-700">
-              <span className="text-gray-500">Owner:</span> {project.username}
+            <h2 className="mt-2 text-sm leading-6 text-gray-700 text-end text-">
+               <i>by {project.username}</i>
             </h2>
 
             <dl className="mt-6 grid grid-cols-1 text-sm leading-6 sm:grid-cols-2">
@@ -54,7 +54,7 @@ export function Project({mode, id}: ProjectProps) {
                   </time>
                 </dd>
               </div>
-              <div className="mt-6 sm:mt-0 sm:pl-4">
+              <div className="mt-2 sm:mt-0 sm:pl-4">
                 <dt className="inline text-gray-500">Finish on:</dt>{' '}
                 <dd className="inline text-gray-700">
                   <time dateTime={project.end_time}>
