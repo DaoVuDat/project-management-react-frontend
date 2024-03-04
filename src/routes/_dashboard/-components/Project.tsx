@@ -241,7 +241,6 @@ function UpdateProjectForm({onClose, project}: UpdateProjectFormProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {mutate, isPending} = useMutation<ProjectType, Error, ProjectUpdate>({
     mutationFn: (data) => {
       return updateProjectById(accessToken, project.id, data);
@@ -260,6 +259,7 @@ function UpdateProjectForm({onClose, project}: UpdateProjectFormProps) {
       });
     },
     onError: () => {
+      toast.dismiss(ToastLoadingId);
       toast.error(`Fail to update project ${project.id}.`);
     },
   });
@@ -286,7 +286,6 @@ function UpdateProjectForm({onClose, project}: UpdateProjectFormProps) {
   const onSubmit = handleSubmit((formData) => {
     // is Dirty -> update and map to ProjectUpdate
     if (isDirty) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const projectUpdate: ProjectUpdate = {
         name: formData.name,
         description: formData.description,
@@ -301,6 +300,8 @@ function UpdateProjectForm({onClose, project}: UpdateProjectFormProps) {
           ? formData.price.substring(0, formData.price.length - 6)
           : undefined,
       };
+
+      mutate(projectUpdate)
     }
 
     onClose();
