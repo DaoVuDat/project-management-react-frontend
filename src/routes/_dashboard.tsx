@@ -16,6 +16,7 @@ import {useSuspenseQuery} from '@tanstack/react-query';
 import {WretchError} from 'wretch/resolver';
 import {GlobalLoading} from '@/components/loading/globalLoading.tsx';
 import _ from 'lodash';
+import { Toast } from '@/components/toast/Toast.tsx';
 
 export const Route = createFileRoute('/_dashboard')({
   component: DashboardLayout,
@@ -313,6 +314,13 @@ function DashboardLayout() {
         )}
       </Disclosure>
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <Toast
+          headerMessage={{
+            error: 'Failure',
+            success: 'Success',
+            loading: 'In Progress',
+          }}
+        />
         <Outlet />
       </div>
     </>

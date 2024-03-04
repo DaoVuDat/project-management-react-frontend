@@ -1,4 +1,4 @@
-import {createFileRoute} from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import {Project} from '@/routes/_dashboard/-components/Project.tsx';
 import {useAuthStore} from '@/store/authStore.tsx';
 import {getProjectById} from '@/services/api/projects.tsx';
@@ -30,6 +30,7 @@ export const Route = createFileRoute('/_dashboard/projects/$id/edit')({
   },
   component: () => {
 		const {id} = Route.useParams()
-    return <Project mode="edit" id={id}/>;
+
+    return <Project fullPath={Route.fullPath} mode="edit" id={id}/>;
   },
 });

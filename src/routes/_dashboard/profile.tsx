@@ -21,7 +21,7 @@ import {
 } from '@tanstack/react-query';
 import {GlobalLoading} from '@/components/loading/globalLoading.tsx';
 import {toast} from 'react-hot-toast';
-import {Toast, ToastLoadingId} from '@/components/toast/Toast.tsx';
+import {ToastLoadingId} from '@/components/toast/Toast.tsx';
 import {clsx} from 'clsx';
 
 export const Route = createFileRoute('/_dashboard/profile')({
@@ -170,6 +170,7 @@ function ProfileRoute() {
     mutation.mutate(dataUpdate);
   });
 
+
   const onCancel = async () => {
     await navigate({to: '/'});
   };
@@ -177,13 +178,6 @@ function ProfileRoute() {
 
   return (
     <>
-      <Toast
-        headerMessage={{
-          error: 'Failure',
-          success: 'Success',
-          loading: 'In Progress',
-        }}
-      />
       <main>
         {mutation.isError && <p>{mutation.error.message}</p>}
         {errors.profileImage && errors.profileImage.message}

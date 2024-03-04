@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_dashboard/projects/$id')({
     const queryClient = context.queryClient;
 
     const projectId = params.id;
-    console.log("$id",projectId)
+
     try {
       await queryClient.ensureQueryData({
         queryKey: ['project', projectId],

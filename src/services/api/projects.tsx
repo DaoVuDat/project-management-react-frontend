@@ -37,8 +37,6 @@ export const getProjects = async (accessToken: string, uid: string | undefined, 
 }
 
 export const getProjectById = async (accessToken: string, id: string) => {
-	console.log("getProjectById",id)
-
 	return await wretchClientWithRefresh
     .auth(`Bearer ${accessToken}`)
     .query({
@@ -46,4 +44,20 @@ export const getProjectById = async (accessToken: string, id: string) => {
     })
     .get(`/project/${id}`)
     .json<{project: Project}>();
+}
+
+export interface ProjectUpdate {
+	name: string
+	description: string
+	price?: string | null | undefined
+	status: ProjectStatus
+	start_time?: string | null | undefined
+	end_time?: string | null | undefined
+}
+
+export const updateProjectById = async (accessToken: string, projectId: string, projectUpdate: ProjectUpdate) => {
+	return await wretchClientWithRefresh
+		.auth(`Bearer ${accessToken}`)
+		.patch(projectUpdate, `/project/${projectId}`)
+		.json<Project>()
 }
