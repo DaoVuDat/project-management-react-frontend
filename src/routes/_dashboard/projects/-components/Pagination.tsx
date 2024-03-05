@@ -86,7 +86,7 @@ export function Pagination({currentPath, table}: PaginationProps) {
                 ...searchParams,
                 pageIndex: e,
               }}
-              key={e+Math.random()}
+              key={e}
               onClick={() => setPageIndex(e - 1)}
               className={clsx(
                 'inline-flex items-center border-t-2 px-4 pt-4 text-sm font-medium',

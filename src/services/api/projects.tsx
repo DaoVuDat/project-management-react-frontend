@@ -46,6 +46,22 @@ export const getProjectById = async (accessToken: string, id: string) => {
     .json<{project: Project}>();
 }
 
+export interface ProjectCreate {
+	user_id: string
+	name: string
+	description: string
+	price?: string | null | undefined
+	status: ProjectStatus
+	start_time?: string | null | undefined
+	end_time?: string | null | undefined
+}
+
+export const createProject = async (accessToken: string, projectCreate: ProjectCreate) => {
+	return await wretchClientWithRefresh
+		.auth(`Bearer ${accessToken}`)
+		.post(projectCreate, `/project`)
+		.json<Project>()
+}
 export interface ProjectUpdate {
 	name: string
 	description: string
@@ -61,3 +77,4 @@ export const updateProjectById = async (accessToken: string, projectId: string, 
 		.patch(projectUpdate, `/project/${projectId}`)
 		.json<Project>()
 }
+

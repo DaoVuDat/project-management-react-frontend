@@ -33,3 +33,4 @@ export const updateProfileUser = async (userId: string, accessToken: string, pro
 		.patch(profileUpdate, `/profile/${userId}`)
 		.json<ProfileResponse>();
 };
+

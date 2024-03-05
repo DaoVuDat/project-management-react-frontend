@@ -9,23 +9,30 @@ import { HiCheck, HiChevronUpDown } from 'react-icons/hi2';
 import { clsx } from 'clsx';
 import _ from 'lodash';
 
-type ControlledSelectProps<
-	T extends string,
-	U extends FieldValues>  =  UseControllerProps<U> & {
-	label: string
-	data: NonNullable<T>[],
+export type DataType = {
+	displayName: string,
+	value: string
 }
 
-export function ControlledSelect<T extends string, U extends FieldValues>({label, data, ...props}: ControlledSelectProps<T, U>) {
+type ControlledSelectProps<U extends FieldValues>  =  UseControllerProps<U> & {
+	label: string
+	data: DataType[],
+	defaultValue: string
+}
+
+export function ControlledSelect<U extends FieldValues>({label, data, defaultValue, ...props}: ControlledSelectProps<U>) {
 	const {field: {name, value, onChange}} = useController(props)
 
+	const getDisplayNameSelected = data.find(v => v.value === value)?.displayName
+	const displayName = getDisplayNameSelected ? getDisplayNameSelected : defaultValue
+	console.log(displayName)
 	return <Listbox value={value} onChange={onChange} name={name}>
 		{({ open }) => (
 			<>
 				<Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">{label}</Listbox.Label>
 				<div className="relative mt-2">
 					<Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary sm:text-sm sm:leading-6">
-						<span className="block truncate">{_.capitalize(value)}</span>
+						<span className="block truncate">{_.capitalize(displayName)}</span>
 						<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <HiChevronUpDown className="h-5 w-5 text-gray-400" aria-hidden="true" />
               </span>
@@ -41,19 +48,19 @@ export function ControlledSelect<T extends string, U extends FieldValues>({label
 						<Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
 							{data.map((obj) => (
 								<Listbox.Option
-									key={obj}
+									key={obj.value}
 									className={({ active }) =>
 										clsx(
 											active ? 'bg-secondary text-white' : 'text-gray-900',
 											'relative cursor-default select-none py-2 pl-3 pr-9'
 										)
 									}
-									value={obj}
+									value={obj.value}
 								>
 									{({ selected, active }) => (
 										<>
                         <span className={clsx(selected ? 'font-semibold' : 'font-normal', 'block truncate')}>
-                          {_.capitalize(obj)}
+                          {obj.displayName}
                         </span>
 
 											{selected ? (

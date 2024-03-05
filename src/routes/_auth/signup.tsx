@@ -17,13 +17,6 @@ export const Route = createFileRoute('/_auth/signup')({
   },
 });
 
-
-// .regex(
-//   new RegExp(
-//     '^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,}$',
-//   ),
-// ),
-
 const schema = z
   .object({
     firstName: z.string().min(1),

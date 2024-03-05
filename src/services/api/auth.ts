@@ -1,9 +1,10 @@
 import {wretchClient} from '@/services/wretchClient.ts';
+import { AccountRole } from '@/services/api/account.ts';
 
 export interface AuthResponse {
   access_token: string;
   user_id: string;
-  role: 'admin' | 'client' | '';
+  role: AccountRole | '';
 }
 
 export interface SignUpUser {

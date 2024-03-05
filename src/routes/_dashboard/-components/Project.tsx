@@ -26,6 +26,7 @@ import {clsx} from 'clsx';
 import {ToastLoadingId} from '@/components/toast/Toast.tsx';
 import {useQueryClient} from '@tanstack/react-query';
 import {CommaInput} from '@/components/inputNumberWithComma/CommaInput.tsx';
+import _ from 'lodash';
 
 type mode = 'edit' | 'view';
 
@@ -223,7 +224,7 @@ const schema = z.object({
   price: z
     .string()
     .refine(
-      (val) => (val ? Number(val) > 1_000_000 : null),
+      (val) => (val ? Number(val) >= 1_000_000 : null),
       'Price must be large than 1,000,000',
     )
     .nullish(),
@@ -338,11 +339,15 @@ function UpdateProjectForm({onClose, project}: UpdateProjectFormProps) {
         </div>
 
         <div className="mb-4">
-          <ControlledSelect<ProjectStatus, SchemaType>
+          <ControlledSelect<SchemaType>
             control={control}
+            defaultValue={project.status}
             name="status"
             label="Status"
-            data={['registering', 'progressing', 'finished']}
+            data={['registering', 'progressing', 'finished'].map(v => ({
+              value: v,
+              displayName: _.capitalize(v)
+            }))}
           />
         </div>
 
