@@ -3,7 +3,7 @@ import {formatMoney} from '@/utils/money.ts';
 import {getRouteApi, useNavigate} from '@tanstack/react-router';
 import {useAuthStore} from '@/store/authStore.tsx';
 import {useSuspenseQuery} from '@tanstack/react-query';
-import {getProjects, Project} from '@/services/api/projects.tsx';
+import {getProjects, Project} from '@/services/api/projects.ts';
 import {
   createColumnHelper,
   flexRender,

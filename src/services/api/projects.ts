@@ -1,12 +1,7 @@
 import { wretchClientWithRefresh } from '@/services/wretchClient.ts';
+import {Payment} from './payment';
 
 export type ProjectStatus = 'registering'| 'progressing'| 'finished'
-
-interface Payment {
-	id: number,
-	amount: number
-	created_at: string
-}
 
 export interface Project {
 	id: string

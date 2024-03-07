@@ -1,20 +1,22 @@
 import {FieldValues, useController, UseControllerProps} from 'react-hook-form';
-import {useState} from 'react';
+import { useEffect, useState } from 'react';
 import {clsx} from 'clsx';
 
 type CommaInputProps<T extends FieldValues> = UseControllerProps<T> & {
-	className?: string | undefined
+	className?: string | undefined,
+  initialValue: string
 }
 
 export function CommaInput<T extends FieldValues>(
-	{className, ...props}: CommaInputProps<T>,
+	{className, initialValue, ...props}: CommaInputProps<T>,
 ) {
   const {
-    field: {name, value, onChange},
+    field: {name, onChange},
     fieldState: {error},
+    formState: {isSubmitSuccessful}
   } = useController(props);
   const [numStr, setNumStr] = useState<string>(
-    addCommas(removeNonNumeric(value)),
+    addCommas(removeNonNumeric(initialValue)),
   );
 
   function addCommas(num: string) {
@@ -24,6 +26,15 @@ export function CommaInput<T extends FieldValues>(
   function removeNonNumeric(num: string) {
     return num.toString().replace(/[^0-9]/g, '');
   }
+
+  function reset() {
+    const removedNonNumeric = removeNonNumeric(initialValue);
+    setNumStr(addCommas(removedNonNumeric));
+  }
+
+  useEffect(() => {
+    reset()
+  }, [isSubmitSuccessful]);
 
   return (
     <fieldset className="relative">

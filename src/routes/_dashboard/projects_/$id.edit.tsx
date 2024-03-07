@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import {Project} from '@/routes/_dashboard/-components/Project.tsx';
 import {useAuthStore} from '@/store/authStore.tsx';
-import {getProjectById} from '@/services/api/projects.tsx';
+import {getProjectById} from '@/services/api/projects.ts';
 import {GlobalLoading} from '@/components/loading/globalLoading.tsx';
 
 export const Route = createFileRoute('/_dashboard/projects/$id/edit')({

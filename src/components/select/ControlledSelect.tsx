@@ -25,7 +25,7 @@ export function ControlledSelect<U extends FieldValues>({label, data, defaultVal
 
 	const getDisplayNameSelected = data.find(v => v.value === value)?.displayName
 	const displayName = getDisplayNameSelected ? getDisplayNameSelected : defaultValue
-	console.log(displayName)
+
 	return <Listbox value={value} onChange={onChange} name={name}>
 		{({ open }) => (
 			<>

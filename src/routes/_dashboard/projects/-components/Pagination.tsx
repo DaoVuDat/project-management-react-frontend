@@ -1,7 +1,7 @@
 import {getRouteApi, Link} from '@tanstack/react-router';
 import {HiArrowLongLeft, HiArrowLongRight} from 'react-icons/hi2';
 import {Table} from '@tanstack/react-table';
-import {Project} from '@/services/api/projects.tsx';
+import {Project} from '@/services/api/projects.ts';
 import {clsx} from 'clsx';
 import _ from 'lodash';
 import {ReactElement} from 'react';
@@ -58,6 +58,7 @@ export function Pagination({currentPath, table}: PaginationProps) {
       </div>
       <div className="hidden md:-mt-px md:flex">
         <Link
+          key="to-first"
           to={currentPath}
           search={{
             ...searchParams,
@@ -79,14 +80,14 @@ export function Pagination({currentPath, table}: PaginationProps) {
         {SetupMiddlePagination(
           pageCount,
           searchParams.pageIndex!,
-          (e) => (
+          (e,idx) => (
             <Link
               to={currentPath}
               search={{
                 ...searchParams,
                 pageIndex: e,
               }}
-              key={e}
+              key={idx}
               onClick={() => setPageIndex(e - 1)}
               className={clsx(
                 'inline-flex items-center border-t-2 px-4 pt-4 text-sm font-medium',
@@ -100,14 +101,15 @@ export function Pagination({currentPath, table}: PaginationProps) {
               {e}
             </Link>
           ),
-          () => (
-            <span className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500">
+          (idx) => (
+            <span key={idx} className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500">
               ...
             </span>
           ),
         )}
 
-        <Link
+        {pageCount > 1 && <Link
+          key="to-end"
           to={currentPath}
           search={{
             ...searchParams,
@@ -124,7 +126,7 @@ export function Pagination({currentPath, table}: PaginationProps) {
             },
           )}>
           {pageCount}
-        </Link>
+        </Link>}
       </div>
       <div className="-mt-px flex w-0 flex-1 justify-end">
         <Link
@@ -159,27 +161,25 @@ export function Pagination({currentPath, table}: PaginationProps) {
 function SetupMiddlePagination(
   pageCount: number,
   currentPage: number,
-  element: (e: number) => ReactElement,
-  dotElement: () => ReactElement,
+  element: (e: number, idx: number) => ReactElement,
+  dotElement: (idx: number) => ReactElement,
 ) {
   if (pageCount < 3) return;
-  else if (pageCount < 6) return _.range(2, pageCount).map((e) => element(e));
+  else if (pageCount < 6) return _.range(2, pageCount).map((e, idx) => element(e, idx));
   else {
-    let arrPagination = _.range(currentPage - 1, currentPage + 2).map((e) =>
-      element(e),
-    );
+    let arrPagination = _.range(currentPage - 1, currentPage + 2).map((e, idx) => element(e, idx));
     if (currentPage < 3) {
-      arrPagination = _.range(2, 5).map((e) => element(e));
+      arrPagination = _.range(2, 5).map((e, idx) => element(e, idx));
     }
     if (currentPage > pageCount - 2) {
-      arrPagination = _.range(pageCount - 3, pageCount).map((e) => element(e));
+      arrPagination = _.range(pageCount - 3, pageCount).map((e, idx) => element(e, idx));
     }
 
     if (currentPage - 1 > 2) {
-      arrPagination = [dotElement(), ...arrPagination];
+      arrPagination = [dotElement(Math.random()), ...arrPagination];
     }
     if (currentPage + 1 < pageCount - 1) {
-      arrPagination = [...arrPagination, dotElement()];
+      arrPagination = [...arrPagination, dotElement(Math.random())];
     }
     return arrPagination;
   }

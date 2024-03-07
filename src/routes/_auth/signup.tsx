@@ -3,7 +3,7 @@ import * as Form from '@radix-ui/react-form';
 import {Controller, useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {signUpUser} from '@/services/api/auth.ts';
+import { SignUpUser, signUpUser } from '@/services/api/auth.ts';
 import {useAuthStore} from '@/store/authStore.tsx';
 
 export const Route = createFileRoute('/_auth/signup')({
@@ -53,7 +53,14 @@ function SignUpRoute () {
 
   const onSubmit = handleSubmit(async (inputData: SignUpSchemaType) => {
     try {
-      const data = await signUpUser(inputData);
+      const signUpDate: SignUpUser = {
+        first_name: inputData.firstName,
+        last_name: inputData.lastName,
+        password: inputData.password,
+        username: inputData.username,
+        confirmed_password: inputData.confirmPassword
+      }
+      const data = await signUpUser(signUpDate);
       setUser(data.user_id, data.role, data.access_token);
       await navigate({to: redirect || "/"});
     } catch (err) {

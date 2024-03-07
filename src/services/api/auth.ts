@@ -8,11 +8,11 @@ export interface AuthResponse {
 }
 
 export interface SignUpUser {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   username: string;
   password: string;
-  confirmPassword: string;
+  confirmed_password: string;
 }
 
 export interface LoginUser {

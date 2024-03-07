@@ -1,7 +1,7 @@
 import {createFileRoute} from '@tanstack/react-router';
 import {z} from 'zod';
 import {useAuthStore} from '@/store/authStore.tsx';
-import {getProjects} from '@/services/api/projects.tsx';
+import {getProjects} from '@/services/api/projects.ts';
 import {GlobalLoading} from '@/components/loading/globalLoading.tsx';
 
 const projectsSearchSchema = z.object({
