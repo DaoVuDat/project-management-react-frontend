@@ -3,7 +3,7 @@ import QueryStringAddon from "wretch/addons/queryString"
 import {AuthResponse} from '@/services/api/auth.ts';
 import { useAuthStore } from '@/store/authStore.tsx';
 
-const BASE_URL = 'http://localhost:8080/v1';
+const BASE_URL = `${import.meta.env.VITE_SERVER_API}/v1`;
 
 
 
