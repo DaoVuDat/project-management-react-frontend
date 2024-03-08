@@ -3,8 +3,12 @@ import {z} from 'zod';
 import {Controller, useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import * as Form from '@radix-ui/react-form';
-import {loginUser} from '@/services/api/auth.ts';
+import { AuthResponse, loginUser, LoginUser } from '@/services/api/auth.ts';
 import { useAuthStore } from '@/store/authStore.tsx';
+import { clsx } from 'clsx';
+import { useMutation } from '@tanstack/react-query';
+import { toErrorResponse } from '@/services/api/errors.ts';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/_auth/login')({
   component: LoginRoute,
@@ -23,6 +27,7 @@ const schema = z.object({
 type SchemeType = z.infer<typeof schema>;
 
 function LoginRoute () {
+  const [errorMessage, setErrorMessage] = useState<string>("")
   const {
     control,
     handleSubmit,
@@ -37,15 +42,21 @@ function LoginRoute () {
 
   const navigate = useNavigate({from: Route.fullPath});
 
-
-  const onSubmit = handleSubmit(async (inputData: SchemeType) => {
-    try {
-      const data = await loginUser(inputData);
+  const {
+    mutate,
+    isPending,
+    isError,
+  } = useMutation<AuthResponse, Error, LoginUser>({
+    mutationFn: signUpData => loginUser(signUpData),
+    onSuccess: async (data) => {
       setUser(data.user_id, data.role, data.access_token);
       await navigate({to: redirect || "/"});
-    } catch (err) {
-      console.log('err', err);
-    }
+    },
+    onError: error => setErrorMessage(toErrorResponse(error).message)
+  })
+
+  const onSubmit = handleSubmit( (inputData: SchemeType) => {
+    mutate(inputData)
   });
 
   return (
@@ -106,11 +117,18 @@ function LoginRoute () {
               </Form.Field>
             )}
           />
+          {isError && <p className="mt-1 text-sm text-red-400">{errorMessage}</p>}
           <Form.Submit asChild>
             <button
               type="submit"
-              className="w-full rounded-lg bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-800">
-              Log in to your account
+              disabled={isPending}
+              className={clsx(
+                "w-full rounded-lg bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-800",
+                {
+                  "cursor-not-allowed": isPending
+                }
+              )}>
+              {!isPending ? "Log in to your account": "Logging in"}
             </button>
           </Form.Submit>
           <p className="text-sm font-light text-gray-500 dark:text-gray-400">

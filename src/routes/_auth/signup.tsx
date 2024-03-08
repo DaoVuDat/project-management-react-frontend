@@ -3,8 +3,12 @@ import * as Form from '@radix-ui/react-form';
 import {Controller, useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
-import { SignUpUser, signUpUser } from '@/services/api/auth.ts';
+import { AuthResponse, SignUpUser, signUpUser } from '@/services/api/auth.ts';
 import {useAuthStore} from '@/store/authStore.tsx';
+import { useMutation } from '@tanstack/react-query';
+import { clsx } from 'clsx';
+import { useState } from 'react';
+import { toErrorResponse } from '@/services/api/errors.ts';
 
 export const Route = createFileRoute('/_auth/signup')({
   component: SignUpRoute,
@@ -38,6 +42,8 @@ const schema = z
 type SignUpSchemaType = z.infer<typeof schema>;
 
 function SignUpRoute () {
+  const [errorMessage, setErrorMessage] = useState<string>("")
+
   const {
     control,
     handleSubmit,
@@ -51,22 +57,30 @@ function SignUpRoute () {
 
   const {redirect} = Route.useSearch();
 
-  const onSubmit = handleSubmit(async (inputData: SignUpSchemaType) => {
-    try {
-      const signUpDate: SignUpUser = {
-        first_name: inputData.firstName,
-        last_name: inputData.lastName,
-        password: inputData.password,
-        username: inputData.username,
-        confirmed_password: inputData.confirmPassword
-      }
-      const data = await signUpUser(signUpDate);
+  const {
+    mutate,
+    isPending,
+    isError,
+  } = useMutation<AuthResponse, Error, SignUpUser>({
+    mutationFn: signUpData => signUpUser(signUpData),
+    onSuccess: async (data) => {
       setUser(data.user_id, data.role, data.access_token);
       await navigate({to: redirect || "/"});
-    } catch (err) {
-      console.log('err', err);
+    },
+    onError: error => setErrorMessage(toErrorResponse(error).message)
+  })
+
+  const onSubmit = handleSubmit( (inputData: SignUpSchemaType) => {
+    const signUpData: SignUpUser = {
+      first_name: inputData.firstName,
+      last_name: inputData.lastName,
+      password: inputData.password,
+      username: inputData.username,
+      confirmed_password: inputData.confirmPassword
     }
-  });
+    mutate(signUpData);
+  })
+
 
   return (
     <>
@@ -237,11 +251,19 @@ function SignUpRoute () {
               </Form.Field>
             )}
           />
+          {isError && <p className="mt-1 text-sm text-red-400">{errorMessage}</p>}
           <Form.Submit asChild>
             <button
+              disabled={isPending}
               type="submit"
-              className="w-full rounded-lg bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-800">
-              Create an account
+
+              className={clsx(
+                "w-full rounded-lg bg-primary-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-800",
+                {
+                  "cursor-not-allowed": isPending
+                }
+              )}>
+              {!isPending ? "Create an account" : "Signing Up"}
             </button>
           </Form.Submit>
           <p className="text-sm font-light text-gray-500 dark:text-gray-400">

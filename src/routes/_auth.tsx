@@ -6,13 +6,17 @@ import {useAuthStore} from '@/store/authStore.tsx';
 
 export const Route = createFileRoute('/_auth')({
   component: AuthLayout,
-  beforeLoad: ({location}) => {
+  validateSearch: (search: Record<string, unknown>): {
+    redirect: string | undefined
+  } => ({
+    redirect: String(search.redirect) || undefined
+  }),
+  beforeLoad: ({search}) => {
     const authStore = useAuthStore.getState();
-    // console.log('userId', authStore);
-    console.log(location.href);
+
     if (authStore.accessToken.length > 1) {
       throw redirect({
-        to: '/',
+        to: search.redirect || '/' ,
       });
     }
   },

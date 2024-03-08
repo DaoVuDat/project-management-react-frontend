@@ -1,5 +1,5 @@
 import {wretchClient} from '@/services/wretchClient.ts';
-import { AccountRole } from '@/services/api/account.ts';
+import {AccountRole} from '@/services/api/account.ts';
 
 export interface AuthResponse {
   access_token: string;
